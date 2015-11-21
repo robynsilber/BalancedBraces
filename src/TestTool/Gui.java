@@ -1,10 +1,10 @@
-package TestTool;
+package testTool;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class Gui extends JFrame {
 	public Gui() {
 		setTitle("Test Brace Balance");
@@ -24,11 +24,13 @@ public class Gui extends JFrame {
 	}
 }
 
+@SuppressWarnings("serial")
 class TextPanel extends JPanel {
 	  // override the paintComponent method
 	  // THE MAIN DEMO OF THIS EXAMPLE:
 	
-	  public void paintComponent(Graphics g) {
+	  @SuppressWarnings("unused")
+	public void paintComponent(Graphics g) {
 	    super.paintComponent(g);
 	    Font f = new Font("SansSerif", Font.BOLD, 14);
 	    Font fi = new Font("SansSerif", Font.BOLD + Font.ITALIC, 14);

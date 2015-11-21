@@ -1,12 +1,7 @@
-package TestTool;
-import java.io.File;
+package testTool;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.Stack;
-
-import javax.print.attribute.standard.PresentationDirection;
 import javax.swing.JTextArea;
-
 
 public class BalanceBraces {
 	public static ArrayList<String> A; 								// (ds1)
@@ -66,10 +61,10 @@ public class BalanceBraces {
 		
 		// Result
 		System.out.println("\n\nUnbalanced Braces, Brackets, and Parentheses:");
-		elogdat.prnt(ELD);
+		ErrorLog.prnt(ELD);
 	}
 	
-	public static void prnt(ArrayList<ErrorLog> a,JTextArea j){
+	public void prnt(ArrayList<ErrorLog> a,JTextArea j){
 		j.append("Unbalanced Braces, Brackets, and Parentheses:" + "\n");
 		for(int i=0; i<a.size(); i++){
 			ErrorLog el = a.get(i);

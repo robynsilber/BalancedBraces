@@ -1,4 +1,4 @@
-package TestTool;
+package testTool;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,8 +17,8 @@ public class GenReport {
 	String filename;
 	static private final String newline = "\n";
 
-	public GenReport(){			
-	}
+//	public GenReport(){			
+//	}
 	
 	public void configReport(ReadFile f){
 		filepath = Paths.get(f.file.getPath()+ "_report.txt");

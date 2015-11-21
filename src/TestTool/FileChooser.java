@@ -1,10 +1,9 @@
-package TestTool;
+package testTool;
 import java.io.*;
-import java.util.ArrayList;
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
-import javax.swing.filechooser.*;
 
 @SuppressWarnings("serial")
 public class FileChooser extends JPanel
@@ -14,7 +13,8 @@ implements ActionListener{
     JTextArea log;
     JFileChooser fc;
     ReadFile fileObj;
-    ArrayList<ErrorLog> content;
+    //ArrayList<ErrorLog> content;
+    private static final BalanceBraces bb = new BalanceBraces();//= new BalanceBraces();
     
     public FileChooser() {
     	super(new BorderLayout());
@@ -46,6 +46,8 @@ implements ActionListener{
         add(buttonPanel, BorderLayout.PAGE_END);
         add(logScrollPane, BorderLayout.CENTER);
     	
+//    	//create instance
+//        bb = new BalanceBraces();
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -57,7 +59,7 @@ implements ActionListener{
 				fileObj.file = fc.getSelectedFile();
 				log.append("Opening: " + fileObj.file.getName() + "." + newline);
 				String type = getExtension(fileObj.file.getName());
-				if (type == null) {
+				if (type == null || type.equals("")) {
 				    //System.err.format("'%s' has an" + " unknown filetype.%n", fileObj.file.getName());
 				    log.append(fileObj.file.getName() + " has an" + " unknown filetype." + newline);
 				} else if (!type.equals("txt")) {
@@ -69,23 +71,32 @@ implements ActionListener{
 			}
 			log.setCaretPosition(log.getDocument().getLength());
 		}
-		BalanceBraces bb = new BalanceBraces();
-		String filepath = this.fileObj.file.getName();
+		String filepath = fileObj.file.getPath();
 		if(e.getSource() == runButton){
+			log.append(filepath + newline);
 			log.append("Start doing balance brace detection method."+newline);			
-			bb.A = fileObj.readFile(filepath);
-			@SuppressWarnings("unused")
-			ArrayList<String[]> removedComments = bb.removeComments(); 				//(main-ds1)
-			@SuppressWarnings("unused")
-			ArrayList<String> deletedStrings = bb.removeStrings();					//(main-ds2)
-			bb.prnt(bb.ELD, log);
-			content = bb.ELD;		
+			BalanceBraces.A = fileObj.readFile(filepath);
+			//@SuppressWarnings("unused")
+			bb.removeComments(); 				//(main-ds1)
+			//@SuppressWarnings("unused")
+			bb.removeStrings();					//(main-ds2)
+			bb.balanceBraces();
+			bb.prnt(BalanceBraces.ELD, log);
+			//content = bb.ELD;		
 			log.setCaretPosition(log.getDocument().getLength());
 		}
 		if(e.getSource() == genFileButton){
+		//testing time in milliseconds of file creation
+			long startTime = System.currentTimeMillis();
+			
 			GenReport report = new GenReport();
 			report.configReport( fileObj);
-			report.genTextFile(content);
+			report.genTextFile(BalanceBraces.ELD);
+			
+			long endTime = System.currentTimeMillis();
+			long totalTime = endTime-startTime;
+			System.out.println("creating gen report time: " + totalTime + " milliseconds");
+		/////////////////////////////////////////////////	
 		}
 	}
 	
@@ -100,7 +111,7 @@ implements ActionListener{
 	    }
 
 	 // get file extension
-	 private static final int NOT_FOUND = -1;
+//	 private static final int NOT_FOUND = -1;
 	 public static final char EXTENSION_SEPARATOR = '.';
 	 public static final String EXTENSION_SEPARATOR_STR = Character.toString(EXTENSION_SEPARATOR);
 	 private static final char UNIX_SEPARATOR = '/';
@@ -109,7 +120,7 @@ implements ActionListener{
 	 static boolean isSystemWindows() {
 	        return SYSTEM_SEPARATOR == WINDOWS_SEPARATOR;
 	    }
-	 public static String getExtension(final String filename) {
+	 public static String getExtension(String filename) { //delete final keyword
 	        if (filename == null) {
 	            return null;
 	        }
