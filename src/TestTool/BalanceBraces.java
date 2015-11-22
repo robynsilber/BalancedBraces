@@ -22,6 +22,9 @@ public class BalanceBraces {
 	}
 	
 	public void balanceBraces(){
+		//clear ELD since its referenced from global variable
+		ELD.clear();
+		
 		ErrorLog elogdat = new ErrorLog();
 		ErrorLog elogdatPeek = new ErrorLog();
 		
