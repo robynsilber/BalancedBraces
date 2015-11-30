@@ -1,0 +1,17 @@
+package cs2113.zombies.city;
+import java.util.Random;
+
+// TODO Use this class to indicate direction for humans and zombies
+public enum Direction {
+	NORTH, SOUTH, EAST, WEST, NIL;
+	
+	static Random RAN = new Random();
+	
+	public static  Direction randomDirection() {
+        return Direction.values()[RAN.nextInt(5)];  
+    }
+	public static Direction newDirection() {
+        return Direction.values()[RAN.nextInt(4)];  
+    }
+}
+

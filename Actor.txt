@@ -1,0 +1,70 @@
+package cs2113.zombies.city;
+
+import java.util.List;
+import java.util.Random;
+import java.awt.Color;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import cs2113.zombies.DotPanel;
+
+
+public class Actor {
+	public String toString(int x, int y, Direction dir) {
+		return "(" + x + ", " + y + ", " + dir + ")";
+	}
+	
+	public boolean withinCityLimits(int x, int y, City city) {
+		return x >= 0 && y >= 0 && x < city.getWidth() && y < city.getHeight();
+	}
+	
+	public boolean overlaps(int x, int y, City city) {
+		if (withinCityLimits(x, y, city)
+				&& city.getColor(x, y) == Building.BUILDING_COLOR){
+			return true;
+		}
+				if (withinCityLimits(x, y, city)
+						&& city.getColor(x, y) == Human.COLOR) {
+					return true;
+				}
+				if (withinCityLimits(x, y, city) &&
+					city.getColor(x, y) == Zombies.ZOMBIE_COLOR){
+					return true;
+				}
+				if (withinCityLimits(x, y, city)
+						&& city.getColor(x, y) == SuperHeroes.SUPER_COLOR) {
+					return true;
+				}
+		return false;
+	}
+	
+	public void erase(int x, int y, City city) {
+		if (withinCityLimits(x, y, city)) {
+			city.setColor(x, y, Color.BLACK);
+		}
+	}
+	
+	public void drawZombie(int x, int y, City city) {
+		if (withinCityLimits(x, y, city)) {
+			city.setColor(x, y, Zombies.ZOMBIE_COLOR);
+		}
+	}
+	public void drawSuperHeroes(int x, int y, City city) {
+		if (withinCityLimits(x, y, city)) {
+			city.setColor(x, y, SuperHeroes.SUPER_COLOR);
+		}
+	}
+	public void drawHuman(int x, int y,City city) {
+		if (withinCityLimits(x, y, city)) {
+			city.setColor(x, y, Human.COLOR);
+		}
+}
+
+public void drawHumanRunning(int x, int y,City city){
+if (withinCityLimits(x, y, city)) {
+	city.setColor(x, y, Human.MCOLOR);
+}
+}
+
+}

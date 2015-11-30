@@ -1,0 +1,186 @@
+package cs2113.zombies.city;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import cs2113.zombies.ZombieSim;
+
+public class City  {
+	public static final Color CITY_COLOR = Color.BLACK;
+	
+	private Color colors[][];
+	private int width, height;
+	private Random rand;
+	
+	private List<Building> buildings;
+	private List<Human> humans;
+	private List<Zombies> zombies;
+	private List<SuperHeroes> superheroes;
+
+	/**
+	 * Create a new City and fill it with buildings and people.
+	 * 
+	 * @param w
+	 *            width of city
+	 * @param h
+	 *            height of city
+	 * @param numB
+	 *            number of buildings
+	 * @param numH
+	 *            number of humans
+	 */
+	public City(int w, int h, int numB, int numH, int numZ, int numS) {
+		width = w;
+		height = h;
+		colors = new Color[w][h];
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				colors[i][j] = Color.BLACK;
+			}
+		}
+		rand = new Random();
+		
+		buildings = new ArrayList<Building>();
+		humans = new LinkedList<Human>();
+		zombies = new LinkedList<Zombies>();
+		superheroes = new LinkedList<SuperHeroes>();
+		
+		for (int i = 0; i < numB; i++) {
+			Building b = new Building();
+			buildings.add(b);
+		}
+
+		for (int i = 0; i < numH; i++) {
+			Human p = new Human();
+			humans.add(p);
+		}
+		for (int i = 0; i < numZ; i++) {
+			Zombies z = new Zombies();
+			zombies.add(z);
+		}
+		for (int i = 0; i < numS; i++) {
+			SuperHeroes s = new SuperHeroes();
+			superheroes.add(s);
+		}
+		
+		initialize();
+		 System.out.println(this.toString());
+	}
+	
+	public City(int w, int h, List<Building> bldgs, List<Human> people, List<Zombies> zmbs, List<SuperHeroes> sh) {
+		width = w;
+		height = h;
+		colors = new Color[w][h];
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				colors[i][j] = Color.BLACK;
+			}
+		}
+		rand = new Random();
+		buildings = bldgs;
+		humans = people;
+		zombies = zmbs;
+		superheroes = sh;
+		initialize();
+	}
+	
+	//public clone
+	// c = city(this. size, this.size, ..)
+	//for i
+	// for j
+	// color[i][j]
+	
+	public int getWidth() {
+		return width;
+	}
+	
+	public int getHeight() {
+		return height;
+	}
+	
+	public Random getRand() {
+		return rand;
+	}
+	
+	public Color getColor(int x, int y) {
+		return colors[x][y];
+	}
+	
+	public void setColor(int x, int y, Color color) {
+		colors[x][y] = color;
+	}
+	
+	public void initialize() {
+		for (Building b : buildings) {
+			b.initialize(this);
+		}
+
+		for (Human p : humans) {
+			p.initialize(this);
+		}	
+		for (Zombies z : zombies){
+			z.initialize(this);
+		}
+		for (SuperHeroes s : superheroes){
+			s.initialize(this);
+		}
+	}
+
+	/**
+	 * Updates the state of the city for a time step.
+	 */
+	public void update() {
+		for (Human p : humans) {
+			p.update(this);
+		}
+		for (Zombies z : zombies) {
+			z.update(this);
+		}
+		for (SuperHeroes s : superheroes) {
+			s.update(this);
+		}
+	}
+	
+	/**
+	 * Draw the buildings, humans, and zombies.
+	 */
+	public void draw() {
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				ZombieSim.dp.setPenColor(colors[x][y]);
+				ZombieSim.dp.drawDot(x, y);
+			}
+		}
+	}
+	
+	public String toString() {
+		// TODO Implement this
+		String grid = "";
+		for (int y = 0; y<=height-1; y++){
+			for (int x = 0; x<=width-1; x++){
+				if (this.getColor(x, y) == Building.BUILDING_COLOR){
+					grid = grid+"x ";
+				}
+				else if (this.getColor(x, y) == Human.COLOR){
+					grid = grid+"H ";
+				}
+				else if (this.getColor(x, y) == Zombies.ZOMBIE_COLOR){
+					grid = grid+"Z ";
+				}
+				else if (this.getColor(x, y) == SuperHeroes.SUPER_COLOR){
+					grid = grid+"S ";
+				}
+				else{
+					grid = grid+". ";
+				}
+				if (x == (width-1)){
+					grid = grid + "\n";
+				}
+			}
+	}	
+		return grid;
+}
+}

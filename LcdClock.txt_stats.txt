@@ -1,0 +1,19 @@
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+|||                          Statistics Report                           |||
+
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+
+||||||||||||||||||||||||||||||||||Generate Time|||||||||||||||||||||||||||||||||
+
+2015/11/23 18:34:41
+
+
+
+Creating total run time: 234775384543 nanoseconds
+Creating total time for creating a Gen Report: 14209449 nanoseconds
+CPU time: 6000000000 nanoseconds
+Used memory in bytes: 2150448 bytes
+Used memory in megabytes: 2 mb

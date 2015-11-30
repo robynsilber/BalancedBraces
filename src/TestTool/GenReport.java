@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,8 +16,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 public class GenReport {
 	Path filepath;
-	String filename;
+	static String filename;
 	static private final String newline = "\n";
+	private static final long MEGABYTE = 1024L * 1024L;
+	static long m_genReportTime;
+	static long m_runtime;
+	
+	public static long bytesToMegabytes(long bytes) {
+	    return bytes / MEGABYTE;
+	  }
 
 	public GenReport(){			
 	}
@@ -23,6 +32,11 @@ public class GenReport {
 	public void configReport(ReadFile f){
 		filepath = Paths.get(f.file.getPath()+ "_report.txt");
 		filename = f.file.getName();
+	}
+	public void configStat(ReadFile f, long r, long runtime){
+		filename = f.file.getName();
+		m_genReportTime = r;
+		m_runtime = runtime;
 	}
 	
 	public void genTextFile(ArrayList<ErrorLog> a){
@@ -78,6 +92,54 @@ public class GenReport {
 		} catch (IOException x) {
 		    System.err.format("IOException: %s%n", x);
 		}
+	}
+	
+	public void genStat(){
+		PrintWriter writer = null;		
+		try {
+			writer = new PrintWriter(filename + "_stats.txt", "UTF-8");
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		writer.println("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||" + newline);
+		writer.println("|||                          Statistics Report                           |||" + newline);
+		writer.println("||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||" + newline);
+		writer.println( newline);
+		writer.println("||||||||||||||||||||||||||||||||||Generate Time|||||||||||||||||||||||||||||||||" + newline);
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Calendar cal = Calendar.getInstance();
+		writer.println(dateFormat.format(cal.getTime()) + newline);
+		writer.println( newline);
+		
+		//writing total time in the text file//
+		writer.println("Creating total run time: " + m_runtime + " nanoseconds");
+		//writing total time in the text file//
+		
+		writer.println("Creating total time for creating a Gen Report: " + m_genReportTime + " nanoseconds");
+		
+		//////////////////////////CPU Thread Time Test//////////////////////////
+		ThreadMXBean bean = ManagementFactory.getThreadMXBean( );
+		writer.print("CPU time: ");
+		writer.print("" + bean.isCurrentThreadCpuTimeSupported( ) != null ? bean.getCurrentThreadCpuTime( ) : 0L);
+		writer.println(" nanoseconds");
+		//////////////////////////CPU Thread Time Test//////////////////////////		
+		
+		
+		
+		
+//////////////////////////memory test//////////////////////////
+		 // Get the Java runtime
+	    Runtime runtime = Runtime.getRuntime();
+	    // Run the garbage collector
+	    runtime.gc();
+	    // Calculate the used memory
+		long memory = runtime.totalMemory() - runtime.freeMemory();
+		writer.println("Used memory in bytes: " + memory + " bytes");
+		writer.println("Used memory in megabytes: " + bytesToMegabytes(memory) + " mb");
+//////////////////////////memory test//////////////////////////
+	    writer.close(); 
+
 	}
 
 

@@ -1,0 +1,236 @@
+package cs2113.zombies.city;
+
+import java.awt.Color;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import cs2113.zombies.DotPanel;
+
+public class SuperHeroes extends Actor{
+	public static final int S_CHANCE = 30;
+	public static final Color SUPER_COLOR = Color.BLUE;
+	private static int count = 0;
+
+	private Random rand;
+	private int id;
+	private int x;
+	private int y;
+	Direction dir;
+	private List<Direction> dirs;
+
+	// ==========================================================
+	// Constructors
+	// ==========================================================
+
+	public SuperHeroes() {
+		count++;
+		this.id = count;
+		this.rand = new Random();
+		this.x = 0;
+		this.y = 0;
+		this.dir = Direction.NIL;
+		dirs = new LinkedList<>();
+	}
+
+	public SuperHeroes(int id, int x, int y, Direction d, List<Direction> dirs) {
+		this.id = id;
+		this.rand = new Random();
+		this.x = x;
+		this.y = y;
+		this.dir = d;
+		this.dirs = dirs;
+	}
+	// ==========================================================
+	// Accessors
+	// ==========================================================
+
+	public int getID() {
+		return id;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public Direction getDir() {
+		return dir;
+	}
+
+	// ==========================================================
+	// Initialize
+	// ==========================================================
+
+	/**
+	 * Places this person in a random position within the city by coloring the
+	 * appropriate dot. Avoids placing the person if something is already there.
+	 * 
+	 * @param city
+	 */
+	public void initialize(City city) {
+		// TODO Implement this method
+			if (x == 0 && y == 0){
+			for (int k = 0; k < 100; k++) {
+				x = city.getRand().nextInt(city.getWidth());
+				y = city.getRand().nextInt(city.getHeight());
+				dir = Direction.newDirection();
+				if (!overlaps(x,y,city)) break;
+			}
+		}
+		drawSuperHeroes(x,y,city);
+		
+	}
+	
+	
+	
+	// ==========================================================
+	// update
+	// ==========================================================
+
+
+	public void update(City city) {		
+			if (withinCityLimits(x, y+1, city) && city.getColor(x, y+1) == Zombies.ZOMBIE_COLOR){
+				drawHuman(x, y+1, city);
+			}
+			
+			if (withinCityLimits(x, y-1, city) && city.getColor(x, y-1) == Zombies.ZOMBIE_COLOR){
+				drawHuman(x, y-1, city);
+			}
+			
+			if (withinCityLimits(x+1, y, city) && city.getColor(x+1, y) == Zombies.ZOMBIE_COLOR){
+				drawHuman(x+1, y, city);
+			}
+			
+			if (withinCityLimits(x-1, y, city) && city.getColor(x-1, y) == Zombies.ZOMBIE_COLOR){
+				drawHuman(x-1, y, city);
+			}
+			
+			
+			else {
+				
+			for(int i = 2; i <= 20; i++){
+					if (withinCityLimits(x, y-i, city) && city.getColor(x, y-i) == Zombies.ZOMBIE_COLOR){
+						erase(x,y,city);
+						y = getY()-1;
+						drawSuperHeroes(x,y,city);
+						break;
+					}
+					
+					if (withinCityLimits(x, y+i, city) && city.getColor(x, y+i) == Zombies.ZOMBIE_COLOR){
+						erase(x,y,city);
+						y = getY()+1;
+						drawSuperHeroes(x,y,city);
+						break;
+					}
+					
+					if (withinCityLimits(x+i, y, city) && city.getColor(x+i, y) == Zombies.ZOMBIE_COLOR){
+						erase(x,y,city);
+						x = getX()+1;
+						drawSuperHeroes(x,y,city);
+						break;
+					}
+					
+					if (withinCityLimits(x-i, y, city) && city.getColor(x-i, y) == Zombies.ZOMBIE_COLOR){
+						erase(x,y,city);
+							x = getX()-1;
+							drawSuperHeroes(x,y,city);
+						break;
+					}
+					
+					else if (i == 10){
+						Random RAN = new Random();
+						int percent = RAN.nextInt(101);
+						if(percent<= S_CHANCE){
+							dir = Direction.newDirection(); 
+						}
+						else {
+							erase(x,y,city);
+							if (getDir().equals(Direction.NORTH)){
+								y = getY()-1;
+								if(overlaps(x,y,city) || !(withinCityLimits(x, y, city))) {
+									y = getY()+1;
+									dir = Direction.SOUTH;
+								}
+							}
+							if (getDir().equals(Direction.SOUTH)){
+								y = getY()+1;		
+									if(overlaps(x,y,city) || !(withinCityLimits(x, y, city))) {
+										y = getY()-1;
+										dir = Direction.NORTH;
+									}
+							}
+							if (getDir().equals(Direction.WEST)){
+								x = getX()-1;		
+								if(overlaps(x,y,city) || !(withinCityLimits(x, y, city))) {
+									x = getX()+1;
+									dir = Direction.EAST;
+								}
+							}
+						if (getDir().equals(Direction.EAST)){
+							x = getX()+1;		
+							if(overlaps(x,y,city) || !(withinCityLimits(x, y, city))) {
+								x = getX()-1;
+								dir = Direction.WEST;
+							}
+							}	
+						drawSuperHeroes(x,y,city);					
+						}
+				} //if loop
+			} //else loop
+		} //for loop
+	}//else
+	
+	
+	// ==========================================================
+	// toString
+	// ==========================================================
+
+	
+	
+	
+	@Override
+	public String toString(int x, int y, Direction dir) {
+		// TODO Auto-generated method stub
+		return super.toString(x, y, dir);
+	}
+
+	
+	@Override
+	public boolean overlaps(int x, int y, City city) {
+		// TODO Auto-generated method stub
+		return super.overlaps(x, y, city);
+	}
+
+	
+
+	@Override
+	public void erase(int x, int y, City city) {
+		// TODO Auto-generated method stub
+		super.erase(x, y, city);
+	}
+
+	@Override
+	public void drawZombie(int x, int y, City city) {
+		// TODO Auto-generated method stub
+		super.drawZombie(x, y, city);
+	}
+
+	@Override
+	public boolean withinCityLimits(int x, int y, City city) {
+		// TODO Auto-generated method stub
+		return super.withinCityLimits(x, y, city);
+	}
+
+	@Override
+	public void drawSuperHeroes(int x, int y, City city) {
+		// TODO Auto-generated method stub
+		super.drawSuperHeroes(x, y, city);
+	}
+	
+	
+}
+

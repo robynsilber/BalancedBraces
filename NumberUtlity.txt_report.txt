@@ -1,0 +1,46 @@
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+|||                           Balance Brace Report                           |||
+
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+
+||||||||||||||||||||||||||||||||||Generate Time|||||||||||||||||||||||||||||||||
+
+2015/11/23 18:35:05
+
+
+
+|||||||||||||||||||Unbalanced Braces, Brackets, and Parentheses:||||||||||||||||
+
+line:144, pos:12, char:{
+line:144, pos:14, char:)
+line:144, pos:24, char:[
+line:144, pos:26, char:)
+line:148, pos:13, char:(
+line:148, pos:18, char:}
+line:148, pos:25, char:(
+line:148, pos:30, char:]
+line:194, pos:4, char:{
+line:219, pos:3, char:)
+line:219, pos:4, char:{
+line:239, pos:3, char:)
+line:239, pos:4, char:{
+line:248, pos:4, char:)
+line:181, pos:33, char:{
+line:278, pos:4, char:)
+line:179, pos:31, char:{
+line:293, pos:5, char:)
+line:173, pos:48, char:{
+line:293, pos:6, char:)
+line:47, pos:23, char:{
+line:293, pos:7, char:)
+line:293, pos:8, char:{
+line:321, pos:5, char:)
+line:4, pos:45, char:{
+line:19, pos:28, char:)
+line:2, pos:20, char:{
+line:24, pos:10, char:)
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+

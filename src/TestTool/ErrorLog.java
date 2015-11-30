@@ -2,7 +2,6 @@ package TestTool;
 
 import java.util.ArrayList;
 
-import javax.swing.JTextArea;
 
 public class ErrorLog {
 	public int line; //index of the line of the text file (index begins at 1)

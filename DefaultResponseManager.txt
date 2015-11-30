@@ -1,0 +1,412 @@
+package adventure;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+public class DefaultResponseManager implements ResponseManager {
+
+    GameWorld world;
+    List<String> verbs1;
+    List<String> verbs2;
+
+    public DefaultResponseManager(GameWorld world) {
+        this.world = world;
+        verbs1 = Arrays.asList("north", "south", "east", "west", "inventory", "displayroom");
+        verbs2 = Arrays.asList("examine", "take", "open", "close", "display");
+    }
+
+    @Override
+    public String generateResponse(String command) {
+        // trim removes leading and trailing white space from command.
+        // split("\\s+") returns an array of all strings in the command
+        // that are delimited by white space.
+        // The split of "hello     there world" will return
+        // ["hello", "there", "world"]
+        // If there are no delimiters in the command, the result will be a
+        // singleton array containing the original command, even if that
+        // command was the empty string (command = "" ==> words = [""]
+        String[] words = command.toLowerCase().trim().split("\\s+");
+       // String result = "";
+        
+        // TODO Implement this method
+        // TODO Make different response methods for each verb (directions can be grouped together)
+    
+       if(!(words[0].equals("") || words[0].equals("north") || words[0].equals("south") || words[0].equals("east") || words[0].equals("west") || words[0].equals("inventory") ||	
+    		   words[0].equals("displayroom") || words[0].equals("examine") || words[0].equals("take") || words[0].equals("open") || words[0].equals("close") || words[0].equals("display"))){
+    	   return makeMessage(ERROR_VERB_UNKNOWN_MESSAGE, words[0]);
+       }
+       else if(words[0].equals("north") || words[0].equals("south") || words[0].equals("east") || words[0].equals("west") || words[0].equals("inventory") ||	
+    		   words[0].equals("displayroom")){
+    	   		if (words.length > 1){
+    	   				return makeMessage(ERROR_VERB_ONLY_MESSAGE, words[0]);
+    	   		}
+    	   		else if (words[0].equals("displayroom")){
+    	   			String currentroom = world.getLocation();
+    	   			return world.printAllRoomObjects(currentroom);
+    	   		}
+    	   		else if(words[0].equals("inventory")){
+    	   			List<String> inlist = world.getInventory();
+    	   			if (inlist.size() == 0){
+    	   				return makeMessage(INV_NOTHING_MESSAGE);
+    	   			}
+    	   			else if (inlist.size() == 1){
+    	   				return makeMessage(INV_LIST_MESSAGE, inlist.get(0));
+    	   			}
+    	   			else if (inlist.size() > 1){
+    	   				String invlist = "You are carrying ";
+    	   				invlist = invlist + inlist.get(0) + " ";
+    	   				return (invlist + "and " + inlist.get(1)) + ".";
+    	   			}
+    	   		}
+    	   		String current = world.getLocation();
+    	        
+    	    	if(current.equals("Living Room")){
+    	    		if(words[0].equals("north")){
+    	    			return makeMessage(GO_CANT_MESSAGE, "north");
+    	    		}
+    	    		if(words[0].equals("south")){
+    	    			if(world.objectHasProperty("living room door", "open")){
+    	    				world.movePlayer("Hallway");
+    	    				return "";
+    	    			}
+    	    			else{
+    	    				return makeMessage(GO_NOTYET_MESSAGE, "living room door", "south");
+    	    			}
+    	    		}
+    	    		if(words[0].equals("east")){
+    	    			world.movePlayer("Bedroom");
+    	    			return "";
+    	    		}
+    	    		if(words[0].equals("west")){
+    	    			world.movePlayer("Kitchen");
+    	    			return "";
+    	    		}
+    	    	}
+    	    	
+    	    	if(current.equals("Kitchen")){
+    	    		if(words[0].equals("south")){
+    	    			return world.getResponder("Kitchen").getResponse("south", "Kitchen", world);
+    	    		}
+    	    		if(words[0].equals("east")){
+    	    			world.movePlayer("Living Room");
+    	    			return "";
+    	    		}
+    	    		if(words[0].equals("north") || words[0].equals("west")){
+    	    			return makeMessage(GO_CANT_MESSAGE, words[0]);
+    	    		}
+    	    	}
+    	    	
+    	    	if(current.equals("Bedroom")){
+    	    		if(words[0].equals("west")){
+    	    			world.movePlayer("Living Room");
+    	    			return "";
+    	    		}
+    	    		if(words[0].equals("south")){
+    	    			world.movePlayer("Bathroom");
+    	    			return "";
+    	    		}
+    	    		if(words[0].equals("north") || words[0].equals("east")){
+    	    			return makeMessage(GO_CANT_MESSAGE, words[0]);
+    	    		}
+    	    	}
+    	    	
+    	    	if(current.equals("Bathroom")){
+    	    		if(words[0].equals("south")){
+    	    			return world.getResponder("Bathroom").getResponse("south", "Bathroom", world);
+    	    		}
+    	    		if(words[0].equals("north")){
+    	    			world.movePlayer("Bedroom");
+    	    			return "";
+    	    		}
+    	    		if(words[0].equals("east") || words[0].equals("west")){
+    	    			return makeMessage(GO_CANT_MESSAGE, words[0]);
+    	    		}
+    	    	}
+    	    	
+    	    	if(current.equals("Hallway")){
+    	    		if(words[0].equals("north")){
+    	    			if (world.objectHasProperty("apartment door", "open")){
+    	    				world.movePlayer("Living Room");
+    	    				return "";
+    	    			}
+    	    			else {
+    	    				return makeMessage(GO_NOTYET_MESSAGE, "apartment door", "north");
+    	    			}
+    	    		}
+    	    		if(words[0].equals("east") || words[0].equals("west") || words[0].equals("south")){
+    	    			return makeMessage(GO_CANT_MESSAGE, words[0]);
+    	    		}
+    	    	}
+       }
+       else if (words[0].equals("examine") || words[0].equals("take") || words[0].equals("open") || words[0].equals("close") || words[0].equals("display")){
+    	   if (words.length > 1){
+    		   String nouninput = "";
+			   for(int i = 1; i < words.length-1; i++){
+				   nouninput = nouninput + words[i] + " ";
+			   }
+			   nouninput = nouninput + words[words.length-1];
+    		   
+    		   if (!(world.isNoun(nouninput))){
+  				return makeMessage(ERROR_NOUN_UNKNOWN_MESSAGE, nouninput);
+    		   } 
+    		   else {
+    			   if (words[0].equals("display")){
+    				   return nouninput.toString();
+    			   }
+    			   if (words[0].equals("take")){
+    				  // take – If	the	object	is	not	takeable:	“The	{object}	is	not	something	you	can	take	
+    				  // with	you.”	If	the	object	you	are	trying	to	take	is	in	your	inventory:	“You	
+    				  // already	have	the	{object}.”	Otherwise,	you	move	the	object	to	your	inventory	
+    				  // and	print:	“You	take	the	{object}.”
+    				  
+    				  if (world.objectHasProperty(nouninput, "takeable")){
+    					  List<String> tinlist = world.getInventory();
+    					  boolean alreadytake = false;
+    					  for(int i = 0; i <tinlist.size(); i++){
+    						  if (tinlist.get(i).equals(nouninput)){
+    							  alreadytake = true;
+    							  return makeMessage(TAKE_ALREADY_MESSAGE,nouninput);
+    						  }
+    					  }
+    					  if (alreadytake == false){
+    				
+    						  if (nouninput.equals("talisman")){
+    							  return world.getResponder("talisman").getResponse("take", "talisman", world);
+    						  }
+    						  else {
+    							  world.moveItemToInventory(nouninput);
+    						  
+    						  return makeMessage(TAKE_OKAY_MESSAGE, nouninput);
+    						  }
+    					  }
+    				  }
+    				  else {
+    					  return makeMessage(TAKE_CANT_MESSAGE,nouninput);
+    				  }
+    			   }
+    			   if (words[0].equals("open")){
+    				   //open – A	successful	open	will	change	an	object’s	state	to open	and	will	print	
+    				   //a	message:	“You	open	the	{object}.”	If	the	object	does	not	have	the	property	
+    				   //openable:	“The	{object}	is	not	something	you	can	open.”	If	the	openable	object	
+    				   //is	already	open:	“The {object}	is	already	open.”	If	the	object	is	a	door	that	is	
+    				   //locked	and	you	do	not	have	the	key	(in	your	inventory):	“The	{door}	is	locked	
+    				   //and	you	do	not	have	the	key.”	If	the	door	is	locked	and	you	do	have	the	key:	
+    				   //“You	unlock	the	{door}	and	open	it.”	If	the	object	is	an	empty	container	(has	
+    				   //the	container	property	but	has	no	children):	“You	open	the	{container}.”	If	the	
+    				   //object	is	a	non-empty	container:	“Opening	the	{container}	reveals	{list}.”	
+    				   //Where	list	is	a	list	of	items	in	the	container,	listed	in	the	same	way	you	list	
+    				   //your	inventory.
+    				   String openobject = "";
+    				   for(int i = 1; i < words.length-1; i++){
+    					   openobject = openobject + words[i] + " ";
+    				   }
+    				   openobject = openobject + words[words.length-1];
+    				   
+    				   if (world.objectHasProperty(openobject, "openable")){
+    					   if(world.objectHasProperty(openobject,"open")){
+    						   
+    						   return makeMessage(OPEN_ALREADY_MESSAGE,openobject);
+    					   }
+    					   else{
+    						   if(world.isDoor(openobject)){
+    							   
+    							   if(world.objectHasProperty(openobject, "locked")){
+    								   
+    								   List<String> keyinlist = world.getInventory();
+    			    					  boolean hasKey = false;
+    			    					  for(int i = 0; i <keyinlist.size(); i++){
+    			    						  if (keyinlist.get(i).equals("metal key")){
+    			    							  hasKey = true;
+    			    							  world.giveObjectProperty(openobject,"open");
+    			    							  if (openobject.equals("living room door")){
+    			    								  world.giveObjectProperty("apartment door", "open");
+    			    							  }
+    			    							  else if (openobject.equals("apartment door")){
+    			    								  world.giveObjectProperty("living room door", "open");
+    			    							  }  
+    			    							  return makeMessage(OPEN_OKAY_UNLOCK_MESSAGE,openobject);
+    			    						  }
+    			    					  }
+    			    					  if (hasKey == false){
+    			    						  return makeMessage(OPEN_NOTYET_LOCKED_MESSAGE, openobject);
+    			    					  }
+    							   }
+    						   }
+    						   else {
+    							   world.giveObjectProperty(openobject, "open");
+    							   List<String> conchild = world.getChildren(openobject);
+    							   if (conchild.size() == 0){
+    								   return makeMessage(OPEN_OKAY_MESSAGE, openobject);
+    							   }
+    							   else {
+    								   for(int i = 0; i < conchild.size(); i++){
+    									   return makeMessage(OPEN_OKAY_CONTAINER_MESSAGE, openobject, conchild.get(i));
+    								   }
+    							   }
+    						   }
+    					   }
+    				   }
+    				   else {
+    					   return makeMessage(OPEN_CANT_MESSAGE,openobject);
+    				   }
+    			   }
+    			   if (words[0].equals("close")){    				   
+    				   if (world.objectHasProperty(nouninput, "openable")){
+    					   if(!world.objectHasProperty(nouninput,"open")){
+    						   
+    						   return makeMessage(CLOSE_ALREADY_MESSAGE,nouninput);
+    					   }
+    					   else{
+    							   world.removeObjectProperty(nouninput, "open");
+    							   return makeMessage(CLOSE_OKAY_MESSAGE, nouninput);
+    							   }
+    						   }
+    				   else {
+    					   return makeMessage(CLOSE_CANT_MESSAGE,nouninput);
+    				   }
+    			   }
+    			  // examine – This	is	not	as	easy	as	it	seems	at	first.	By	default,	you	can	just	
+    			   //print	the	object’s	description.	If	the	object	does	not	have	a	description	(it’s	
+    			   //the	empty	string):	“You	don’t	notice	anything	special	about	the	{object}.” If	the	5
+    			   //object	is	openable,	you	should	append	its	open	status	to	anything	you	print:	
+    			   //“Your	foot	locker	has seen	better	days.	The	foot	locker	is	closed.”	If	the	object	is	
+    			   //a	container,	you	should	also	append	a	list	of	items	inside	the	container:	“Your	
+    			   //foot	locker	has	seen	better	days.	The	foot	locker	is	open.	Inside	you	see	a	ball	of	
+    			   //yarn,	a	Nerf	football,	and	a metal	key.”	If	the	container	is	open	but	empty,	the	
+    			   //final	part	of	your	message	should	be:	“There	is	nothing	inside.” Finally,	for	an	
+    			   //openable	object	that	does	not	have	a	description,	you	should	skip	the	“You	
+    			   //don’t	notice	anything	special...”	message	and	just	print	the	open	status
+    			   if(words[0].equals("examine")){
+    				   String descrip = "";
+    				   
+    				   	if (world.getThing(nouninput).description == ""){
+    				   		if(world.objectHasProperty(nouninput, "openable")){
+    				   			if(world.objectHasProperty(nouninput,"open")){
+    				   			List<String> nounchild = world.getChildren(nouninput);
+    				   			if (nounchild.size() == 0){
+  								   return descrip + makeMessage(EXAMINE_OPEN_MESSAGE, nouninput, "There is nothing inside.");
+  							   }
+  							   else {
+  								   String content = "Inside you see a ";
+									    content = content + nounchild.get(0);
+									    return descrip + makeMessage(EXAMINE_OPEN_MESSAGE, nouninput, "") + content + ".";
+  							   }
+    				   			}
+ 				   			else{
+ 				   				return (descrip + makeMessage(EXAMINE_CLOSED_MESSAGE,nouninput));
+ 				   				}
+    				   		}
+    				   		else{
+    				   			return makeMessage(EXAMINE_DEFAULT_MESSAGE, nouninput);
+    				   		}
+    				   	}
+    				   	else {
+    				   		descrip = world.getThing(nouninput).description;
+    				   		if(world.objectHasProperty(nouninput, "openable")){
+    				   			
+    				   			if(world.objectHasProperty(nouninput,"open")){
+    				   				List<String> nounchild = world.getChildren(nouninput);
+     							   if (nounchild.size() == 0){
+     								   return descrip + makeMessage(EXAMINE_OPEN_MESSAGE, nouninput, "There is nothing inside.");
+     							   }
+     							   else {
+     								   String content = "Inside you see a ";
+       								 	if (nounchild.size() == 1){
+     									    content = content + nounchild.get(0);
+     									    return descrip + content;
+       								 }
+       								 else{
+       								   for(int i = 0; i < nounchild.size()-1; i++){
+       									   content = content + nounchild.get(i) + ", ";
+       								   }
+       								   content = content + "and a " + nounchild.get(nounchild.size()-1);
+       								   return descrip + content;
+     							   }
+    				   			}
+    				   			}
+    				   			else{
+    				   				return (descrip + makeMessage(EXAMINE_CLOSED_MESSAGE,nouninput));
+    				   			}
+    				   		}
+    				   		else {
+    				   			return descrip;
+    				   		}
+    				   	}
+    			   }
+    		   }
+    	   //}
+    	   }
+    	   else if (words.length == 1){
+	   			return makeMessage(ERROR_VERB_NEEDS_NOUN_MESSAGE,words[0]);
+	   		}
+       }
+          	   
+ 
+        	String result = "";
+        for (String word : words) {
+           result += word + " ";
+        }
+       
+        return result;
+    }
+
+    private String printList(List<String> list) {
+        StringBuilder sb = new StringBuilder();
+        if (list.size() == 1) {
+            return "the " + list.get(0);
+        }
+        Iterator<String> iter = list.iterator();
+        while (iter.hasNext()) {
+            String s = iter.next();
+            if (iter.hasNext()) {
+                sb.append("the ").append(s).append(", ");
+            } else {
+                sb.append("and the ").append(s);
+            }
+        }
+        return sb.toString();
+    }
+
+    private static final String CLOSE_ALREADY_MESSAGE = "The {noun} is already closed.";
+    private static final String CLOSE_CANT_MESSAGE = "The {noun} is not something you can close.";
+    private static final String CLOSE_OKAY_MESSAGE = "You close the {noun}.";
+    private static final String CONTENTS_LIST_MESSAGE = "Inside you see {list}.";
+    private static final String CONTENTS_NOTHING_MESSAGE = "There is nothing inside.";
+    private static final String ERROR_NOUN_UNKNOWN_MESSAGE = "I do not understand the noun: {noun}.";
+    private static final String ERROR_NOUN_UNSEEN_MESSAGE = "I don't see any {noun} here.";
+    private static final String ERROR_TOO_MANY_MESSAGE = "I don't understand commands with more than two words.";
+    private static final String ERROR_VERB_NEEDS_NOUN_MESSAGE = "The verb {verb} must be used with a noun.";
+    private static final String ERROR_VERB_ONLY_MESSAGE = "The verb {verb} must be used by itself.";
+    private static final String ERROR_VERB_UNKNOWN_MESSAGE = "I do not understand the verb: {verb}.";
+    private static final String EXAMINE_CLOSED_MESSAGE = "The {noun} is closed.";
+    private static final String EXAMINE_DEFAULT_MESSAGE = "You don't notice anything special about the {noun}.";
+    private static final String EXAMINE_OPEN_MESSAGE = "The {noun} is open. {contents}";
+    private static final String GO_CANT_MESSAGE = "You can't go {direction} from here.";
+    private static final String GO_NOTYET_MESSAGE = "You need to open the {door} before you can go {direction}.";
+    private static final String INV_LIST_MESSAGE = "You are carrying {list}.";
+    private static final String INV_NOTHING_MESSAGE = "You are not carrying anything.";
+    private static final String OPEN_ALREADY_MESSAGE = "The {noun} is already open.";
+    private static final String OPEN_CANT_MESSAGE = "The {noun} is not something you can open.";
+    private static final String OPEN_NOTYET_LOCKED_MESSAGE = "The {noun} is locked and you do not have the key.";
+    private static final String OPEN_OKAY_CONTAINER_MESSAGE = "Opening the {noun} reveals {list}.";
+    private static final String OPEN_OKAY_MESSAGE = "You open the {noun}.";
+    private static final String OPEN_OKAY_UNLOCK_MESSAGE = "You unlock the {noun} and open it.";
+    private static final String TAKE_ALREADY_MESSAGE = "You already have the {noun}.";
+    private static final String TAKE_CANT_MESSAGE = "The {noun} is not something you can take with you.";
+    private static final String TAKE_OKAY_MESSAGE = "You take the {noun}.";
+    
+    private String makeMessage(String message) {
+        return message;
+    }
+
+    private String makeMessage(String message, String word) {
+        return message.replaceFirst("\\{\\S+\\}", word);
+    }
+
+    private String makeMessage(String message, String word1, String word2) {
+        String temp = message.replaceFirst("\\{\\S+\\}", word1);
+        return temp.replaceFirst("\\{\\S+\\}", word2);
+    }
+
+}

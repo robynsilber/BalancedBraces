@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
-import javax.swing.filechooser.*;
 
 @SuppressWarnings("serial")
 public class FileChooser extends JPanel
@@ -14,10 +13,12 @@ implements ActionListener{
     JButton openButton, runButton, genFileButton;
     JTextArea log;
     JFileChooser fc;
-    ReadFile fileObj;
+    static ReadFile fileObj;
     //ArrayList<ErrorLog> content;
     BalanceBraces bb ;//= new BalanceBraces();
     
+    static long genReportTime;
+    static long g_startTime, g_endTime;
     public FileChooser() {
     	super(new BorderLayout());
     	fileObj = new ReadFile();
@@ -50,9 +51,12 @@ implements ActionListener{
     	
     	//create instance
         bb = new BalanceBraces();
+        // start TIME RECORD
+        g_startTime = System.nanoTime();
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		// TODO Auto-generated method stub
 		// Handle open button
 		if(e.getSource() == openButton){
@@ -73,16 +77,7 @@ implements ActionListener{
 			}
 			log.setCaretPosition(log.getDocument().getLength());
 		}
-		
-		//proper IO handling in case user cancels
-		String filepath;
-		try{
-			filepath = fileObj.file.getName();
-		}catch(NullPointerException ex){
-			//User canceled out of open file dialog
-			return;
-		}
-		
+		String filepath = fileObj.file.getName();
 		if(e.getSource() == runButton){
 			log.append("Start doing balance brace detection method."+newline);			
 			bb.A = fileObj.readFile(filepath);
@@ -90,29 +85,32 @@ implements ActionListener{
 			ArrayList<String[]> removedComments = bb.removeComments(); 				//(main-ds1)
 			@SuppressWarnings("unused")
 			ArrayList<String> deletedStrings = bb.removeStrings();					//(main-ds2)
-			
 			bb.balanceBraces();
-			
 			bb.prnt(bb.ELD, log);
-			
 			//content = bb.ELD;		
 			log.setCaretPosition(log.getDocument().getLength());
 		}
 		if(e.getSource() == genFileButton){
 		//testing time in milliseconds of file creation
-			long startTime = System.currentTimeMillis();
+			long startTime = System.nanoTime();
 			
 			GenReport report = new GenReport();
 			report.configReport( fileObj);
 			report.genTextFile(bb.ELD);
+		
 			
-			long endTime = System.currentTimeMillis();
-			long totalTime = endTime-startTime;
-			System.out.println("creating gen report time: " + totalTime + " milliseconds");
+			long endTime = System.nanoTime();
+			long genReportTime = endTime-startTime;
+			g_endTime = System.nanoTime();
+			long g_runtime = g_endTime - g_startTime;
+			report.configStat(fileObj, genReportTime, g_runtime);
+			report.genStat();
+			log.append("Stat report has been generated..." + newline);
 		/////////////////////////////////////////////////	
+			
 		}
 	}
-	
+		
 	 protected static ImageIcon createImageIcon(String path) {
 	        java.net.URL imgURL = FileChooser.class.getResource(path);
 	        if (imgURL != null) {
@@ -133,7 +131,6 @@ implements ActionListener{
 	 static boolean isSystemWindows() {
 	        return SYSTEM_SEPARATOR == WINDOWS_SEPARATOR;
 	    }
-	 
 	 public static String getExtension(final String filename) {
 	        if (filename == null) {
 	            return null;

@@ -1,16 +1,17 @@
 package TestTool;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
+
 
 import javax.swing.*;
 
 public class Gui extends JFrame {
+	
 	public Gui() {
 		setTitle("Test Brace Balance");
 		setSize(600, 500);
 		setLocation(100, 200);
-		
+	
 		addWindowListener(new WindowAdapter() {
 			public void windowclosing(WindowEvent e){
 				System.exit(0);
@@ -18,10 +19,15 @@ public class Gui extends JFrame {
 		});
 		
 		// Add Panels
+		FileChooser fc = new FileChooser();
 				Container contentPane = getContentPane();
 				//contentPane.add(new TextPanel());
-				contentPane.add(new FileChooser());
+				contentPane.add(fc);
+				
+	
 	}
+	
+
 }
 
 class TextPanel extends JPanel {

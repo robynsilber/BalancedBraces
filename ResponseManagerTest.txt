@@ -1,0 +1,476 @@
+package adventure;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.either;
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class ResponseManagerTest {
+
+    private GameWorld world;
+    private ResponseManager defaultResp;
+
+    public ResponseManagerTest() {
+    }
+
+    @Before
+    public void setUp() {
+        world = MyGame.buildGameWorld();
+        defaultResp = new DefaultResponseManager(world);
+    }
+
+    // ==========================================================
+    // Test movement commands
+    // ==========================================================
+    
+    
+    @Test
+    public void testNorthFromLivingRoom() {
+        List<String> commands = Arrays.asList("north");
+        String expected = "You can't go north from here.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Living Room", world.getLocation());
+    }
+
+    @Test
+    public void testSouthFromLivingRoom() {
+        List<String> commands = Arrays.asList("south");
+        String expected = "You need to open the living room door before you can go south.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Living Room", world.getLocation());
+    }
+    
+
+    @Test
+    public void testEastFromLivingRoom() {
+        List<String> commands = Arrays.asList("east");
+        String expected = "";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Bedroom", world.getLocation());
+    }
+
+    @Test
+    public void testWestFromLivingRoom() {
+        List<String> commands = Arrays.asList("west");
+        String expected = "";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Kitchen", world.getLocation());
+    }
+
+    @Test
+    public void testSouthFromKitchen() {
+        List<String> commands = Arrays.asList("west", "south");
+        String expected = "The kitchen window is painted shut - You can't budge it.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Kitchen", world.getLocation());
+    }
+
+    @Test
+    public void testEastFromKitchen() {
+        List<String> commands = Arrays.asList("west", "east");
+        String expected = "";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Living Room", world.getLocation());
+    }
+    
+    @Test
+    public void testWestFromKitchen() {
+        List<String> commands = Arrays.asList("west", "west");
+        String expected = "You can't go west from here.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Kitchen", world.getLocation());
+    }
+    @Test
+    public void testNorthFromKitchen() {
+        List<String> commands = Arrays.asList("west", "north");
+        String expected = "You can't go north from here.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Kitchen", world.getLocation());
+    }
+
+    @Test
+    public void testSouthFromBedroom() {
+        List<String> commands = Arrays.asList("east", "south");
+        String expected = "";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Bathroom", world.getLocation());
+    }
+
+    @Test
+    public void testWestFromBedroom() {
+        List<String> commands = Arrays.asList("east", "west");
+        String expected = "";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Living Room", world.getLocation());
+    }
+
+    @Test
+    public void testEastFromBedroom() {
+        List<String> commands = Arrays.asList("east", "east");
+        String expected = "You can't go east from here.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Bedroom", world.getLocation());
+    }
+    @Test
+    public void testNorthFromBedroom() {
+        List<String> commands = Arrays.asList("east", "north");
+        String expected = "You can't go north from here.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Bedroom", world.getLocation());
+    }
+    
+    @Test
+    public void testSouthFromBathroom() {
+        List<String> commands = Arrays.asList("east", "south", "south");
+        String expected = "The bathroom window is painted shut - You can't budge it.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Bathroom", world.getLocation());
+    }
+
+    @Test
+    public void testNorthFromBathroom() {
+        List<String> commands = Arrays.asList("east", "south", "north");
+        String expected = "";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Bedroom", world.getLocation());
+    }
+    
+    @Test
+    public void testEastFromBathroom() {
+        List<String> commands = Arrays.asList("east", "south","east");
+        String expected = "You can't go east from here.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Bathroom", world.getLocation());
+    }
+    @Test
+    public void testWestFromBathroom() {
+        List<String> commands = Arrays.asList("east", "south","west");
+        String expected = "You can't go west from here.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Bathroom", world.getLocation());
+    }
+    
+    @Test
+    public void testSouthFromLivingRoom2() {
+        List<String> commands = Arrays.asList("east", "open dresser", "take metal key", "west", "open living room door", "south");
+        String expected = "";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Hallway", world.getLocation());
+    }
+    
+    @Test
+    public void testFromHallway() {
+        List<String> commands = Arrays.asList("east", "open dresser", "take metal key", "west", "open living room door", "south", "north");
+        String expected = "";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        assertEquals("Living Room", world.getLocation());
+        
+        List<String> commands1 = Arrays.asList("east", "open dresser", "take metal key", "west", "open living room door", "south", "close apartment door", "open apartment door","north");
+        String expected1 = "";
+        String actual1 = playAdventure(commands1, defaultResp);
+        assertEquals(expected1, actual1);
+        assertEquals("Living Room", world.getLocation());
+        
+        List<String> commands2 = Arrays.asList("east", "open dresser", "take metal key", "west", "open living room door", "south", "close apartment door", "north");
+        String expected2 = "You need to open the apartment door before you can go north.";
+        String actual2 = playAdventure(commands2, defaultResp);
+        assertEquals(expected2, actual2);
+        assertEquals("Hallway", world.getLocation());
+        
+        List<String> commands3 = Arrays.asList("east", "open dresser", "take metal key", "west", "open living room door", "south", "west");
+        String expected3 = "You can't go west from here.";
+        String actual3 = playAdventure(commands3, defaultResp);
+        assertEquals(expected3, actual3);
+        assertEquals("Hallway", world.getLocation());
+        
+        List<String> commands4 = Arrays.asList("east", "open dresser", "take metal key", "west", "open living room door", "south", "east");
+        String expected4 = "You can't go east from here.";
+        String actual4 = playAdventure(commands4, defaultResp);
+        assertEquals(expected4, actual4);
+        assertEquals("Hallway", world.getLocation());
+    }
+    
+    // ==========================================================
+    // Test from Errors
+    // ==========================================================
+    @Test
+    public void testNonVerb() {
+        List<String> commands = Arrays.asList("run");
+        String expected = "I do not understand the verb: run.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        
+        List<String> commands1 = Arrays.asList("test");
+        String expected1 = "I do not understand the verb: test.";
+        String actual1 = playAdventure(commands1, defaultResp);
+        assertEquals(expected1, actual1);
+    }
+    
+    @Test
+    public void testVerbOnly() {
+        List<String> commands = Arrays.asList("north room");
+        String expected = "The verb north must be used by itself.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        
+        List<String> commands2 = Arrays.asList("displayroom kitchen");
+        String expected2 = "The verb displayroom must be used by itself.";
+        String actual2 = playAdventure(commands2, defaultResp);
+        assertEquals(expected2, actual2);
+    }
+    
+    @Test
+    public void testNeedNoun() {
+        List<String> commands = Arrays.asList("take");
+        String expected = "The verb take must be used with a noun.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        
+        List<String> commands1 = Arrays.asList("display");
+        String expected1 = "The verb display must be used with a noun.";
+        String actual1 = playAdventure(commands1, defaultResp);
+        assertEquals(expected1, actual1);
+    }
+    
+    @Test
+    public void testWrongNoun() {
+        List<String> commands = Arrays.asList("take toy");
+        String expected = "I do not understand the noun: toy.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        
+        List<String> commands1 = Arrays.asList("display north");
+        String expected1 = "I do not understand the noun: north.";
+        String actual1 = playAdventure(commands1, defaultResp);
+        assertEquals(expected1, actual1);
+    }
+    
+    // ==========================================================
+    // Other Tests
+    // ==========================================================
+    @Test
+    public void testEnter() {
+        List<String> commands = Arrays.asList("");
+        String expected = " ";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+    }
+    
+    // ==========================================================
+    // Verb Tests
+    // ==========================================================
+    
+    @Test
+    public void testDisplay() {
+        List<String> commands = Arrays.asList("display armchair");
+        String expected = "armchair";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void testDisplayRoom() {
+        List<String> commands = Arrays.asList("displayroom");
+        String expected = "Living Room<br>" 
+        		+ "\n" + "&nbsp;&nbsp;&nbsp;&nbsp;living room door<br>"
+        		+ "\n" + "&nbsp;&nbsp;&nbsp;&nbsp;armchair<br>" + "\n";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        
+        List<String> commands1 = Arrays.asList("east", "south","displayroom");
+        String expected1 = "Bathroom<br>" + "\n";
+        String actual1 = playAdventure(commands1, defaultResp);
+        assertEquals(expected1, actual1);
+    }
+    
+    @Test
+    public void testDisplayRoom2(){
+    	List<String> commands2 = Arrays.asList("east", "open dresser", "take metal key", "west", "open living room door", "south","displayroom");
+        String expected2 = "Hallway<br>" 
+        		+ "\n" + "&nbsp;&nbsp;&nbsp;&nbsp;apartment door<br>" + "\n";
+        String actual2 = playAdventure(commands2, defaultResp);
+        assertEquals(expected2, actual2);
+    }
+    
+    @Test
+    public void testInventory() {
+        List<String> commands = Arrays.asList("inventory");
+        String expected = "You are not carrying anything.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        
+        List<String> commands1 = Arrays.asList("west", "open refrigerator", "take talisman", "inventory");
+        String expected1 = "You are carrying talisman.";
+        String actual1 = playAdventure(commands1, defaultResp);
+        assertEquals(expected1, actual1);
+        
+        List<String> commands2 = Arrays.asList("west", "open refrigerator", "take talisman", "inventory", "east", "east", "open dresser", "take metal key", "inventory");
+        String expected2 = "You are carrying talisman and metal key.";
+        String actual2 = playAdventure(commands2, defaultResp);
+        assertEquals(expected2, actual2);
+    }
+    
+    @Test
+    public void testInventory2(){
+    	List<String> commands3 = Arrays.asList("east", "open dresser", "take metal key", "inventory");
+        String expected3 = "You are carrying metal key.";
+        String actual3 = playAdventure(commands3, defaultResp);
+        assertEquals(expected3, actual3);
+    }
+    
+    @Test
+    public void testTake(){
+    	List<String> commands = Arrays.asList("take armchair");
+        String expected = "The armchair is not something you can take with you.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        
+        List<String> commands11 = Arrays.asList("west", "take refrigerator");
+        String expected11 = "The refrigerator is not something you can take with you.";
+        String actual11 = playAdventure(commands11, defaultResp);
+        assertEquals(expected11, actual11);
+        
+        List<String> commands1 = Arrays.asList("west", "open refrigerator", "take talisman");
+        String expected1 = "When you reach for the talisman it begins to glow an eerie green light. The light subsides and you quickly take the talisman.";
+        String actual1 = playAdventure(commands1, defaultResp);
+        assertEquals(expected1, actual1);
+        
+        List<String> commands12 = Arrays.asList("west", "open refrigerator", "take talisman", "take talisman");
+        String expected12 = "You already have the talisman.";
+        String actual12 = playAdventure(commands12, defaultResp);
+        assertEquals(expected12, actual12);
+        
+        List<String> commands2 = Arrays.asList("east", "open dresser", "take metal key");
+        String expected2 = "You take the metal key.";
+        String actual2 = playAdventure(commands2, defaultResp);
+        assertEquals(expected2, actual2);
+        
+        List<String> commands3 = Arrays.asList("east", "open dresser", "take metal key", "take metal key");
+        String expected3 = "You already have the metal key.";
+        String actual3 = playAdventure(commands3, defaultResp);
+        assertEquals(expected3, actual3);
+    }
+    
+    @Test
+    public void testOpen() {
+        List<String> commands = Arrays.asList("open living room door");
+        String expected = "The living room door is locked and you do not have the key.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        
+        List<String> commands1 = Arrays.asList("open armchair");
+        String expected1 = "The armchair is not something you can open.";
+        String actual1 = playAdventure(commands1, defaultResp);
+        assertEquals(expected1, actual1);
+        
+        List<String> commands2 = Arrays.asList("east", "open dresser", "take metal key", "west", "open living room door");
+        String expected2 = "You unlock the living room door and open it.";
+        String actual2 = playAdventure(commands2, defaultResp);
+        assertEquals(expected2, actual2);
+        
+        List<String> commands3 = Arrays.asList("east", "open dresser", "take metal key", "west", "open living room door", "south", "close apartment door", "open apartment door");
+        String expected3 = "You unlock the apartment door and open it.";
+        String actual3 = playAdventure(commands3, defaultResp);
+        assertEquals(expected3, actual3);
+        assertEquals("Hallway", world.getLocation());
+        
+        List<String> commands4 = Arrays.asList("east", "open dresser", "take metal key", "close dresser", "west", "east", "open dresser");
+        String expected4 = "You open the dresser.";
+        String actual4 = playAdventure(commands4, defaultResp);
+        assertEquals(expected4, actual4);
+    }
+    
+    @Test
+    public void testClose() {
+        List<String> commands = Arrays.asList("close living room door");
+        String expected = "The living room door is already closed.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        
+        List<String> commands1 = Arrays.asList("close armchair");
+        String expected1 = "The armchair is not something you can close.";
+        String actual1 = playAdventure(commands1, defaultResp);
+        assertEquals(expected1, actual1);
+        
+        List<String> commands2 = Arrays.asList("east", "open dresser", "close dresser");
+        String expected2 = "You close the dresser.";
+        String actual2 = playAdventure(commands2, defaultResp);
+        assertEquals(expected2, actual2);
+        
+        List<String> commands3 = Arrays.asList("east", "open dresser", "take metal key", "west", "open living room door", "close living room door");
+        String expected3 = "You close the living room door.";
+        String actual3 = playAdventure(commands3, defaultResp);
+        assertEquals(expected3, actual3);
+        
+        List<String> commands4 = Arrays.asList("east", "open dresser", "take metal key", "west", "open living room door", "south", "close apartment door");
+        String expected4 = "You close the apartment door.";
+        String actual4 = playAdventure(commands4, defaultResp);
+        assertEquals(expected4, actual4);
+    }
+    
+    @Test
+    public void testExamine() {
+        List<String> commands = Arrays.asList("examine living room door");
+        String expected = "The living room door is closed.";
+        String actual = playAdventure(commands, defaultResp);
+        assertEquals(expected, actual);
+        
+        List<String> commands1 = Arrays.asList("examine armchair");
+        String expected1 = "The armchair is old but comfortable.";
+        String actual1 = playAdventure(commands1, defaultResp);
+        assertEquals(expected1, actual1);
+        
+        List<String> commands3 = Arrays.asList("east", "open dresser", "examine dresser");
+        String expected3 = "The dresser is open. Inside you see a metal key.";
+        String actual3 = playAdventure(commands3, defaultResp);
+        assertEquals(expected3, actual3);
+    
+        List<String> commands2 = Arrays.asList("east", "open dresser", "take metal key", "examine dresser");
+        String expected2 = "The dresser is open. There is nothing inside.";
+        String actual2 = playAdventure(commands2, defaultResp);
+        assertEquals(expected2, actual2);
+        
+        List<String> commands4 = Arrays.asList("east", "open dresser", "take metal key", "examine metal key");
+        String expected4 = "You don't notice anything special about the metal key.";
+        String actual4 = playAdventure(commands4, defaultResp);
+        assertEquals(expected4, actual4);
+    }
+    // ==========================================================
+    // Private convenience method
+    // ==========================================================
+    
+    private String playAdventure(
+            List<String> commands,
+            ResponseManager defaultResp) {
+        String message = "";
+        for (String cmd : commands) {
+            message = defaultResp.generateResponse(cmd); // potentially updates world
+        }
+        return message;
+    }
+
+}

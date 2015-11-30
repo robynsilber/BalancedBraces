@@ -9,6 +9,8 @@ import javax.swing.JTextArea;
 
 
 public class BalanceBraces {
+	
+	
 	public static ArrayList<String> A; 								// (ds1)
 	public static Stack<ErrorLog> S; 									// (ds2)
 	public static ArrayList<ErrorLog> resolvErr;					// (ds3)
@@ -22,9 +24,6 @@ public class BalanceBraces {
 	}
 	
 	public void balanceBraces(){
-		//clear ELD since its referenced from global variable
-		ELD.clear();
-		
 		ErrorLog elogdat = new ErrorLog();
 		ErrorLog elogdatPeek = new ErrorLog();
 		
@@ -275,7 +274,7 @@ public class BalanceBraces {
 		else return '(';
 	}
 	
-	
+
 	public  boolean ifElseCheck(char c1, char c2){
 		boolean match;
 		if(c2=='}'){
